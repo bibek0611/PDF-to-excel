@@ -1,0 +1,20 @@
+import tabula as tb
+import pandas as pd
+
+# Define the input PDF file
+input_pdf = "Dream.pdf"
+
+# Java options to allocate more memory
+java_options = "-Xmx4G"  # Allocate 4GB of memory, adjust as needed
+
+# Read tables from pages 1 to 100 of the input PDF with custom Java options
+tables = tb.read_pdf(input_pdf, pages="1-13203", multiple_tables=True, java_options=java_options)
+
+# Create a Pandas Excel writer object
+with pd.ExcelWriter("pdf_tables.xlsx", engine="xlsxwriter") as excel_writer:
+    # Process each table and add it to the Excel writer
+    for idx, table_df in enumerate(tables):
+        # Add each table to a separate sheet in the Excel workbook
+        table_df.to_excel(excel_writer, sheet_name=f"Table_{idx + 1}", index=False)
+
+print("Tables from PDF pages 1 to 13203 converted to a single Excel workbook.")

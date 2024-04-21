@@ -1,0 +1,40 @@
+import tabula as tb
+import pandas as pd
+import math
+
+# Define the input PDF file
+input_pdf = "Dream.pdf"
+
+# Java options to allocate more memory
+java_options = "-Xmx4G"  # Allocate 4GB of memory, adjust as needed
+
+# Total number of pages in the PDF
+total_pages = 13203
+
+# Batch size for processing
+batch_size = 500
+
+# Calculate the number of batches
+num_batches = math.ceil(total_pages / batch_size)
+
+# Process each batch of pages
+for batch_index in range(num_batches):
+    # Calculate the start and end page for the current batch
+    start_page = batch_index * batch_size + 1
+    end_page = min((batch_index + 1) * batch_size, total_pages)
+
+    # Read tables from the current batch of pages
+    tables = tb.read_pdf(input_pdf, pages=f"{start_page}-{end_page}", multiple_tables=True, java_options=java_options)
+
+    # Concatenate all tables into a single DataFrame
+    combined_df = pd.concat(tables)
+
+    # Create a Pandas Excel writer object for the current batch
+    output_file = f"pdf_tables_batch_{batch_index + 1}.xlsx"
+    with pd.ExcelWriter(output_file, engine="xlsxwriter") as excel_writer:
+        # Write the combined DataFrame to a single sheet in the Excel workbook
+        combined_df.to_excel(excel_writer, sheet_name="Combined_Table", index=False)
+
+    print(f"Batch {batch_index + 1} - Pages {start_page}-{end_page} processed and saved to {output_file}")
+
+print("Processing complete.")

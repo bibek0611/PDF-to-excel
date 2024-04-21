@@ -1,0 +1,20 @@
+import tabula as tb
+import pandas as pd
+
+# Define the input PDF file
+input_pdf = "Dream.pdf"
+
+# Read tables from pages 1 to 10 of the input PDF
+tables = tb.read_pdf(input_pdf, pages="1-10")
+
+# Process each table and convert it to Excel
+for idx, table_df in enumerate(tables):
+    # Convert each table to Excel
+    excel_file = f"pdf_convert_table_{idx + 1}.xlsx"
+    table_df.to_excel(excel_file, index=False)
+    print(f"Table {idx + 1} converted to Excel: {excel_file}")
+
+# Convert pages 1 to 10 of the entire PDF to CSV
+output_csv = "dream.csv"
+tb.convert_into(input_pdf, output_csv, output_format="csv", pages="1-10")
+print(f"PDF pages 1 to 10 converted to CSV: {output_csv}")
